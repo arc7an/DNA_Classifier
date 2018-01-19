@@ -6,6 +6,11 @@ ecoli <- unlist(read.fasta('/home/artem/work/2016/iteb/e.coli_U00096.2.fasta', a
 ecoli_char <- unlist(strsplit(ecoli, ''))
 
 
+load("/home/artem/work/2018/classifier_on_other_genomes/annotated.clean.promoter.set.Rdata")
+string_operations_test <- head(promClean[,1:9][promClean$Sigma =="Sigma70",])[2:3,]
+forward_test <- paste(get_forward_substring(ecoli_char, string_operations_test[1,]$TSS, c(60, 20)), collapse="") == toupper(string_operations_test[1,]$seq)
+reverse_test <- paste(get_reverse_substring(ecoli_char, string_operations_test[2,]$TSS, c(60, 20)), collapse="") == toupper(string_operations_test[2,]$seq)
+
 #calculated_promoters <- which(rownames(pca_set) %in% c("ynfEp", "aceBp", "aroKp1", "ecpDp1"))
 aceBp <- pca_set[which(rownames(pca_set) == "aceBp"),]
 ynfEp <- pca_set[which(rownames(pca_set) == "ynfEp"),]

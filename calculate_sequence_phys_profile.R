@@ -2,6 +2,14 @@ if(!require(ape)){stop('Code requires library "ape".\n')}
 if(!require(reldna)){stop('Code requires library "reldna".\n')}
 if(!require(parallel)){stop('Code requires library "parallel".\n')}
 
+get_forward_substring <- function(seq, tss, boundaries) {
+  return(seq[(tss-boundaries[1]):(tss+boundaries[2])])
+}
+
+get_reverse_substring <- function(seq, tss, boundaries) {
+  return(rev(chartr("ATGC", "TACG", seq[(tss-boundaries[2]):(tss+boundaries[1])])))
+}
+
 #' Title
 #'
 #' @param seq full sequence (chromosome)
@@ -13,23 +21,24 @@ if(!require(parallel)){stop('Code requires library "parallel".\n')}
 #' @export
 #'
 #' @examples
-dynchars<-function(seq, interval, tss, strand=c('forward','reverse')) {
-  seq<-unlist(strsplit(seq, ''))
+dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forward','reverse')) {
 
-  if (missing(interval))
-  stop("Need to specify interval")
+  if (missing(average_interval_size))
+  stop("Need to specify average_interval_size")
 
   if(!is.character(seq))
     stop("Sequence must be a character vector containing A, C, G, T letters only")
-  # if((tss - interval < 1) || (tss + interval > length(seq)))
-  #   stop("Considered interval exceeds the size of the sequence")
-  strand <- match.arg(strand)
+  # if((tss - average_interval_size < 1) || (tss + average_interval_size > length(seq)))
+  #   stop("Considered average_interval_size exceeds the size of the sequence")
+  seq <- unlist(strsplit(seq, ''))
   seq <- toupper(seq)
-  seq <- switch(strand, 
-              forward=seq,
-              reverse=rev(seq))
   
-  seq <- seq[(tss - 150):(tss + 250 - 1)]
+  boundaries <- boundaries + average_interval_size %/% 2
+  
+  strand <- match.arg(strand)
+  seq <- switch(strand, 
+              forward=get_forward_substring(seq, tss, boundaries),
+              reverse=get_reverse_substring(seq, tss, boundaries))
   
   a<-3.4*10^(-10)
   #I<-c(7.6, 4.8, 8.2, 4.1)*10^(-44)
@@ -41,15 +50,12 @@ dynchars<-function(seq, interval, tss, strand=c('forward','reverse')) {
   csG<-cumsum(seq=='G')
   csC<-cumsum(seq=='C')
 
-  countA = csA[interval:length(csA)]-c(0, csA[1:(length(csA)-interval)])
-  countT = csT[interval:length(csT)]-c(0, csT[1:(length(csT)-interval)])
-  countG = csG[interval:length(csG)]-c(0, csG[1:(length(csG)-interval)])
-  countC = csC[interval:length(csC)]-c(0, csC[1:(length(csC)-interval)])
+  countA = csA[average_interval_size:length(csA)]-c(0, csA[1:(length(csA)-average_interval_size)])
+  countT = csT[average_interval_size:length(csT)]-c(0, csT[1:(length(csT)-average_interval_size)])
+  countG = csG[average_interval_size:length(csG)]-c(0, csG[1:(length(csG)-average_interval_size)])
+  countC = csC[average_interval_size:length(csC)]-c(0, csC[1:(length(csC)-average_interval_size)])
 
-  
-  M <- switch(strand,
-              forward = cbind(countA, countT, countG, countC)/interval,
-              reverse = cbind(countT, countA, countC, countG)/interval)
+  M <- cbind(countA, countT, countG, countC)/average_interval_size
 
   #Is <- as.numeric(M%*%I)#! numeric conversion
   Ks <- as.numeric(M%*%K)
