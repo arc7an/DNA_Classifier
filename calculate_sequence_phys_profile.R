@@ -13,7 +13,7 @@ if(!require(parallel)){stop('Code requires library "parallel".\n')}
 #' @export
 #'
 #' @examples
-dynchars<-function(seq, interval, tss, strand=c(1,2)) {
+dynchars<-function(seq, interval, tss, strand=c('forward','reverse')) {
   seq<-unlist(strsplit(seq, ''))
 
   if (missing(interval))
@@ -23,14 +23,11 @@ dynchars<-function(seq, interval, tss, strand=c(1,2)) {
     stop("Sequence must be a character vector containing A, C, G, T letters only")
   # if((tss - interval < 1) || (tss + interval > length(seq)))
   #   stop("Considered interval exceeds the size of the sequence")
-
+  strand<- match.arg(strand)
   seq <- toupper(seq)
-  if (strand == 1) {
-    seq <- seq[(tss - 150):(tss + 250 - 1)]
-  }
-  else {
-    seq <- seq[(tss - 250):(tss + 150 - 1)]
-  }
+  seq<-switch(strand,
+              forward=seq[(tss - 150):(tss + 250 - 1)],
+              reverse=seq[(tss - 250):(tss + 150 - 1)])
 
 
   a<-3.4*10^(-10)
@@ -96,15 +93,17 @@ dynchars<-function(seq, interval, tss, strand=c(1,2)) {
 #' @export
 #'
 #' @examples
-calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=c(250, 150), zout=-480:239, strand=1) {
+calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=c(250, 150), zout=-480:239, strand=c('forward','reverse')) {
   #lseqspline1D(substr(e.coli_U00096.2, exp_tsss[i]-250, exp_tsss[i]+150), bound=c(50, 350), ref=251 )
-  p <- lseqspline1D(substr(extended_string, tss_position-ep_interval[1], tss_position+ep_interval[2]), bound=c(50, 350), ref=251)
-  if (strand == 1) {
-    return (p$mpot[p$x %in% zout])
-  }
-  else{
-    return (rev(p$mpot[p$x %in% zout]))
-  }
+  strand<- match.arg(strand)
+  p <- lseqspline1D(
+    substr(extended_string, tss_position-ep_interval[1], tss_position+ep_interval[2]),
+    bound=c(50, 350),
+    ref=251)
+  return(
+    switch(strand,
+           forward=p$mpot[p$x %in% zout],
+           reverse=rev(p$mpot[p$x %in% zout])))
 }
 
 #' Title
@@ -120,7 +119,7 @@ calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=
 #' @export
 #'
 #' @examples
-calculate_profile <- function(dnaSeq, dynamic_interval, tss_position, ep_interval=c(267, 217), zout=-480:239, strand=1) {
+calculate_profile <- function(dnaSeq, dynamic_interval, tss_position, ep_interval=c(267, 217), zout=-480:239, strand=c('forward','reverse')) {
   #ep_interval = c(163, 213) for reverse, for forward c(267, 217), zout - the same
   dynRes <- dynchars(dnaSeq, dynamic_interval, tss_position, strand)
   epRes <- calculate_EP_on_interval(tss_position, dnaSeq, ep_interval, zout, strand)
