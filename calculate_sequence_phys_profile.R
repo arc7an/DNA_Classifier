@@ -67,9 +67,7 @@ dynchars<-function(seq, interval, tss, strand=c(1,2)) {
 
     dynchars_return<-list(E0=E0, d=d, gc=gc)
     return(dynchars_return)
-  }
-
-  else {
+  } else {
     M_comp<-cbind(countT, countA, countC, countG)/interval
     M_comp<-apply(t(M_comp),1,rev)
 
