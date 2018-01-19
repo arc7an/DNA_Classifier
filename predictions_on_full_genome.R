@@ -1,5 +1,5 @@
-library(ape)
-library(dplyr)
+if(!require(ape)){stop('Code requires library "ape".\n')}
+if(!require(dplyr)){stop('Code requires library "dplyr".\n')}
 
 # used functions
 printConfusionMatrix <- function(dirName) {
@@ -27,11 +27,11 @@ printConfusionMatrix <- function(dirName) {
       names(factorRes)[3]  <- 'NumberOfComponents'
       names(factorRes)[4]  <- 'TrainingProportion'
       names(factorRes)[5]  <- 'Seed'
-      
+
       output <- rbind(output, res)
       outputFactor <- rbind(outputFactor, factorRes)
     }
-    
+
   }
   rownames(output) <- NULL
   rownames(outputFactor) <- NULL
@@ -39,12 +39,12 @@ printConfusionMatrix <- function(dirName) {
 }
 
 filter_best_model <- function(models_folder, classifier_type, ...){
-  conf_matrices <- printConfusionMatrix(models_folder)  
+  conf_matrices <- printConfusionMatrix(models_folder)
   filtered <- conf_matrices[conf_matrices$TypeOfModel == classifier_type,]
   return(arrange(filtered, ... = ...)[1:10,])
 }
 
-sliding_window <- function(input, len, by=2){ 
+sliding_window <- function(input, len, by=2){
   starts <- seq(1,length(input),by)
   tt <- lapply(starts, function(y) input[y:(y+(len-1))])
   sapply(tt, function(x) x[!is.na(x)])
@@ -66,11 +66,11 @@ df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics
 
 make_prediction_for_slice <- function(ep_slice, model, strand=1) {
 # load chosen model Nonpropmoter-Promoter and adjust apriori probabilities
-#  load("/home/artem/work/2017/grant_R_code_and_data/interval_150_50/Nonpromoter_50_0.9_nb_1116.Rdata")  
+#  load("/home/artem/work/2017/grant_R_code_and_data/interval_150_50/Nonpromoter_50_0.9_nb_1116.Rdata")
   gc(verbose = F)
   load(model)
   fit_model$finalModel$apriori[1] <- 0.9999
-  fit_model$finalModel$apriori[2] <- 0.0001  
+  fit_model$finalModel$apriori[2] <- 0.0001
   bounds <- as.integer(strsplit(strsplit(ep_slice, ".r")[[1]][1], "_")[[1]][3:4])
   print("Bounds:")
   print(bounds)
@@ -91,35 +91,35 @@ make_prediction_for_slice <- function(ep_slice, model, strand=1) {
     # df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics[bounds[1]:(bounds[2] - 294), c(2,4,6)]
     res <- res[nrow(res):1,]
   }
-  
+
   sliced_e01 <- sliding_window(df_whole_ecoli_dynamic_characteristics[,1], 201, 1)
   sliced_e01 <- t(do.call(rbind, sliced_e01))
   sliced_d1 <- sliding_window(df_whole_ecoli_dynamic_characteristics[,2], 201, 1)
   sliced_d1 <- t(do.call(rbind, sliced_d1))
   sliced_gc1 <- sliding_window(df_whole_ecoli_dynamic_characteristics[,3], 201, 1)
   sliced_gc1 <- t(do.call(rbind, sliced_gc1))
-  
+
   rm(df_whole_ecoli_dynamic_characteristics)
   gc(verbose = F)
-  
+
   combined <- rbind(sliced_e01, sliced_d1, res, sliced_gc1)
-  
+
   rm(sliced_e01, sliced_d1, sliced_gc1, res)
   gc(verbose = F)
-  
+
   combined_pca <- t(combined) %*% prcomp_res$rotation - prcomp_res$center
   rm(combined)
   gc(verbose = F)
-  
+
   prediction <- predict(fit_model, combined_pca, type="prob")
-  
+
   # print("Amount of Promoters with probability > 50%:")
   # print(length(prediction[prediction$Promoter > 0.5,2]))
   # print("Amount of Promoters with probability > 75%:")
   # print(length(prediction[prediction$Promoter > 0.75,2]))
   # print("Amount of Promoters with probability > 90%:")
   # print(length(prediction[prediction$Promoter > 0.9,2]))
-  
+
   rm(combined_pca)
   gc(verbose = F)
   # filename <- cat("/home/artem/work/2018/MCE/predictions/prediction_", bounds[1], "_", bounds[2], ".Rdata", sep="")

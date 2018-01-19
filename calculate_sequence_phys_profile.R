@@ -1,6 +1,6 @@
-library(ape)
-library(reldna)
-library(parallel)
+if(!require(ape)){stop('Code requires library "ape".\n')}
+if(!require(reldna)){stop('Code requires library "reldna".\n')}
+if(!require(parallel)){stop('Code requires library "parallel".\n')}
 
 #' Title
 #'
