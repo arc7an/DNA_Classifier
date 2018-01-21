@@ -7,7 +7,9 @@ get_forward_substring <- function(seq, tss, boundaries) {
 }
 
 get_reverse_substring <- function(seq, tss, boundaries) {
-  return(rev(chartr("ATGC", "TACG", seq[(tss-boundaries[2]):(tss+boundaries[1])])))
+  res <- rev(chartr("ATGC", "TACG", seq[(tss-boundaries[2]):(tss+boundaries[1])]))
+#  return(tail(res, n=1))
+  return(res)
 }
 
 #' Title
@@ -107,9 +109,10 @@ calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=
 #' @export
 #'
 #' @examples
-calculate_profile <- function(dnaSeq, dynamic_interval, tss_position, ep_interval=c(267, 217), zout=-480:239, strand=c('forward','reverse')) {
+calculate_profile <- function(dnaSeq, average_interval_size, tss_position, dynamic_interval, ep_interval=c(267, 217), zout=-480:239, strand=c('forward','reverse')) {
   #ep_interval = c(163, 213) for reverse, for forward c(267, 217), zout - the same
-  dynRes <- dynchars(dnaSeq, dynamic_interval, tss_position, strand)
+  #seq, average_interval_size, tss, boundaries, strand=c('forward','reverse')
+  dynRes <- dynchars(dnaSeq, average_interval_size, tss_position,  dynamic_interval, strand)
   epRes <- calculate_EP_on_interval(tss_position, dnaSeq, ep_interval, zout, strand)
   return(c(dynRes$E0, dynRes$d, epRes, dynRes$gc))
 }
