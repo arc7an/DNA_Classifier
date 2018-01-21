@@ -38,14 +38,23 @@ tested_aroKp1 <- dataset_pro$aroKp1
 tested_ecpDp1 <- dataset_pro$ecpDp1
 tested_accDp <- dataset_pro$accDp
 
-tested_ynfEp_profile <- calculate_profile(ecoli, 200, tested_ynfEp$tss, c(150, 50), c(267, 217), -480:239, "forward")
-tested_aceBp_profile <- calculate_profile(ecoli, 200, tested_aceBp$tss, c(150, 50), c(267, 217), -480:239, "forward")
-tested_accAp_profile <- calculate_profile(ecoli, 200, tested_accAp$tss, c(150, 50), c(267, 217), -480:239, "forward")
+# tested_ynfEp_profile <- calculate_profile(ecoli, 200, tested_ynfEp$tss, c(150, 50), c(267, 217), -480:239, "forward")
+# tested_aceBp_profile <- calculate_profile(ecoli, 200, tested_aceBp$tss, c(150, 50), c(267, 217), -480:239, "forward")
+# tested_accAp_profile <- calculate_profile(ecoli, 200, tested_accAp$tss, c(150, 50), c(267, 217), -480:239, "forward")
+# 
+# tested_aroKp1_profile <- calculate_profile(ecoli, 200, tested_aroKp1$tss, c(150, 50), c(163, 213), -480:239, "reverse")
+# tested_ecpDp1_profile <- calculate_profile(ecoli, 200, tested_ecpDp1$tss, c(150, 50), c(163, 213), -480:239, "reverse")
+# tested_accDp_profile <- calculate_profile(ecoli, 200, tested_accDp$tss, c(150, 50), c(163, 213), -480:239, "reverse")
 
-tested_aroKp1_profile <- calculate_profile(ecoli, 200, tested_aroKp1$tss, c(150, 50), c(163, 213), -480:239, "reverse")
-tested_ecpDp1_profile <- calculate_profile(ecoli, 200, tested_ecpDp1$tss, c(150, 50), c(163, 213), -480:239, "reverse")
-tested_accDp_profile <- calculate_profile(ecoli, 200, tested_accDp$tss, c(150, 50), c(163, 213), -480:239, "reverse")
+tested_ynfEp_profile <- calculate_profile(ecoli, 200, tested_ynfEp$tss, c(150, 50), c(250, 150), -480:239, "forward")
+tested_aceBp_profile <- calculate_profile(ecoli, 200, tested_aceBp$tss, c(150, 50), c(250, 150), -480:239, "forward")
+tested_accAp_profile <- calculate_profile(ecoli, 200, tested_accAp$tss, c(150, 50), c(250, 150), -480:239, "forward")
 
+tested_aroKp1_profile <- calculate_profile(ecoli, 200, tested_aroKp1$tss, c(150, 50), c(250, 150), -480:239, "reverse")
+tested_ecpDp1_profile <- calculate_profile(ecoli, 200, tested_ecpDp1$tss, c(150, 50), c(250, 150), -480:239, "reverse")
+tested_accDp_profile <- calculate_profile(ecoli, 200, tested_accDp$tss, c(150, 50), c(250, 150), -480:239, "reverse")
+
+#probably these test do not make sense
 e0_test_aceBp <- all(aceBp[1:201] == tested_aceBp_profile[1:201])
 print(e0_test_aceBp)
 e0_test_ynfEp <- all(ynfEp[1:201] == tested_ynfEp_profile[1:201])

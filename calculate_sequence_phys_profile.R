@@ -86,14 +86,17 @@ dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forwar
 calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=c(250, 150), zout=-480:239, strand=c('forward','reverse')) {
   #lseqspline1D(substr(e.coli_U00096.2, exp_tsss[i]-250, exp_tsss[i]+150), bound=c(50, 350), ref=251 )
   strand<- match.arg(strand)
+  
+  subseq <-switch(strand,
+                  forward = substr(extended_string, tss_position-ep_interval[1], tss_position+ep_interval[2]),
+                  reverse = substr(extended_string, tss_position-ep_interval[2], tss_position+ep_interval[1]))
   p <- lseqspline1D(
-    substr(extended_string, tss_position-ep_interval[1], tss_position+ep_interval[2]),
+    subseq,
     bound=c(50, 350),
     ref=251)
-  return(
-    switch(strand,
-           forward=p$mpot[p$x %in% zout],
-           reverse=rev(p$mpot[p$x %in% zout])))
+  return(switch(strand,
+          forward=p$mpot[p$x %in% zout],
+          reverse=p$mpot[p$x %in% (-1*rev(zout))]))
 }
 
 #' Title
