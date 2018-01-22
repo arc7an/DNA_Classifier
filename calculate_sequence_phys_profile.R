@@ -86,10 +86,11 @@ dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forwar
 calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=c(250, 150), zout=-480:239, strand=c('forward','reverse')) {
   #lseqspline1D(substr(e.coli_U00096.2, exp_tsss[i]-250, exp_tsss[i]+150), bound=c(50, 350), ref=251 )
   strand<- match.arg(strand)
-  
+  extended_string <- unlist(strsplit(extended_string, ''))
   subseq <-switch(strand,
                   forward = get_forward_substring(extended_string, tss_position, ep_interval),
                   reverse = get_reverse_substring(extended_string, tss_position, ep_interval))
+  subseq <- paste0(subseq, collapse = "")
   p <- lseqspline1D(
     subseq,
     bound=c(50, 350),
@@ -113,6 +114,7 @@ calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=
 calculate_profile <- function(dnaSeq, average_interval_size, tss_position, dynamic_interval, ep_interval=c(267, 217), zout=-480:239, strand=c('forward','reverse')) {
   #ep_interval = c(163, 213) for reverse, for forward c(267, 217), zout - the same
   #seq, average_interval_size, tss, boundaries, strand=c('forward','reverse')
+  #dnaSeq <- unlist(strsplit(dnaSeq, ''))
   dynRes <- dynchars(dnaSeq, average_interval_size, tss_position,  dynamic_interval, strand)
   epRes <- calculate_EP_on_interval(tss_position, dnaSeq, ep_interval, zout, strand)
   return(c(dynRes$E0, dynRes$d, epRes, dynRes$gc))
