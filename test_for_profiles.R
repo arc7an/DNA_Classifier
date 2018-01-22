@@ -2,6 +2,7 @@
 source("/home/artem/work/2018/classifier_on_other_genomes/calculate_sequence_phys_profile.R")
 load("/home/artem/work/2018/classifier_on_other_genomes/pre_pca_data_promoter_set_200_150_50.Rdata")
 
+
 ecoli <- unlist(read.fasta('/home/artem/work/2016/iteb/e.coli_U00096.2.fasta', as.string = F, seqonly = T))
 ecoli_char <- unlist(strsplit(ecoli, ''))
 test_txt <- readChar("/home/artem/work/2018/classifier_on_other_genomes/test_sequence_octave_vs_r.txt", 1000)

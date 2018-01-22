@@ -88,15 +88,13 @@ calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=
   strand<- match.arg(strand)
   
   subseq <-switch(strand,
-                  forward = substr(extended_string, tss_position-ep_interval[1], tss_position+ep_interval[2]),
-                  reverse = substr(extended_string, tss_position-ep_interval[2], tss_position+ep_interval[1]))
+                  forward = get_forward_substring(extended_string, tss_position, ep_interval),
+                  reverse = get_reverse_substring(extended_string, tss_position, ep_interval))
   p <- lseqspline1D(
     subseq,
     bound=c(50, 350),
     ref=251)
-  return(switch(strand,
-          forward=p$mpot[p$x %in% zout],
-          reverse=p$mpot[p$x %in% (-1*rev(zout))]))
+  return(p$mpot[p$x %in% zout])
 }
 
 #' Title
