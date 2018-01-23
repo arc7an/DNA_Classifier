@@ -1,9 +1,24 @@
 if(!require(ape)){stop('Code requires library "ape".\n')}
 if(!require(reldna)){stop('Code requires library "reldna".\n')}
 if(!require(parallel)){stop('Code requires library "parallel".\n')}
+if(!require(Biostrings)){stop('Code requires library "Biostrings".\n')}
 
+get_forward_subseq <- function(seq, tss, boundaries) {
+  return(as.character(
+    DNAString(seq,
+              start = tss-boundaries[1],
+              nchar = sum(boundaries)+1)))
+}
+
+get_reverse_subseq <- function(seq, tss, boundaries) {
+  return(as.character(
+    reverseComplement(
+      DNAString(seq,
+                start = tss-boundaries[2],
+                nchar = sum(boundaries)+1))))
+}
 get_forward_substring <- function(seq, tss, boundaries) {
-  return(seq[(tss-boundaries[1]):(tss+boundaries[2])])
+   return(seq[(tss-boundaries[1]):(tss+boundaries[2])])
 }
 
 get_reverse_substring <- function(seq, tss, boundaries) {
@@ -34,14 +49,14 @@ dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forwar
   #   stop("Considered average_interval_size exceeds the size of the sequence")
   seq <- unlist(strsplit(seq, ''))
   seq <- toupper(seq)
-  
+
   boundaries <- boundaries + average_interval_size %/% 2
-  
+
   strand <- match.arg(strand)
-  seq <- switch(strand, 
+  seq <- switch(strand,
               forward=get_forward_substring(seq, tss, boundaries),
               reverse=get_reverse_substring(seq, tss, boundaries))
-  
+
   a<-3.4*10^(-10)
   #I<-c(7.6, 4.8, 8.2, 4.1)*10^(-44)
   K<-c(227, 155, 220, 149)*10^(-20)
@@ -74,7 +89,7 @@ dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forwar
 #' Title
 #'
 #' @param tss_position
-#' @param extended_string
+#' @param extended_string -- vector of characters
 #' @param ep_interval
 #' @param zout
 #' @param strand
@@ -86,7 +101,7 @@ dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forwar
 calculate_EP_on_interval <- function(tss_position, extended_string, ep_interval=c(250, 150), zout=-480:239, strand=c('forward','reverse')) {
   #lseqspline1D(substr(e.coli_U00096.2, exp_tsss[i]-250, exp_tsss[i]+150), bound=c(50, 350), ref=251 )
   strand<- match.arg(strand)
-  extended_string <- unlist(strsplit(extended_string, ''))
+  #extended_string <- unlist(strsplit(extended_string, ''))
   subseq <-switch(strand,
                   forward = get_forward_substring(extended_string, tss_position, ep_interval),
                   reverse = get_reverse_substring(extended_string, tss_position, ep_interval))
