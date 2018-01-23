@@ -1,6 +1,5 @@
 #setting working directory where the script, 2 octave scripts and .Rdata files are stored
 setwd('/home/artem/work/2016/iteb/')
-
 # removing saved working space
 rm(list=ls())
 
@@ -33,7 +32,7 @@ dataset_lowscore <- dataset_lowscore[1:2000]
 
 # extracting data on all promoters and on experimentaly found ones - including previosely calculated electrostatic potential profiles
 
-calculate_dynamic_characteristics <- function(seq, interval_size) {
+calculate_dynamic_characteristics <- function(seq, interval_size, strand=c("forward", "reverse")) {
   if (missing(seq))
     stop("Need to specify sequence (as a vector of chars)")
   
@@ -44,6 +43,9 @@ calculate_dynamic_characteristics <- function(seq, interval_size) {
     stop("Sequence must be a character vector containing A, C, G, T letters only")
   
   seq<-toupper(seq)
+  # seq <- switch(strand,
+  #               forward = seq,
+  #               reverse = rev(chartr("ATGC", "TACG", seq)))
   # seq<-c(seq, seq[2:(interval_size)])
   
   a <- 3.4*10^(-10)
@@ -119,7 +121,9 @@ prepare_sequences <- function(dataset, experimental_flag = F, promoter_names = c
 
 #calculation the properties for a given genome with sliding window 200 nt
 
-dynamic_characteristics<-calculate_dynamic_characteristics(ecoli_char, window_size)
+# dynamic_characteristics<-calculate_dynamic_characteristics(ecoli_char, window_size)
+# dynamic_characteristics<-calculate_dynamic_characteristics(paste0(substr(ecoli_char, (length(ecoli_char) - 400), length(ecoli_char)), ecoli_char, substr(ecoli_char, 1, 400), sep=""), window_size)
+dynamic_characteristics<-calculate_dynamic_characteristics(c(ecoli_char[(length(ecoli_char) - 400):length(ecoli_char)], ecoli_char, ecoli_char[1:400]), window_size)
 E01<-dynamic_characteristics$E01
 E02<-dynamic_characteristics$E02
 
@@ -139,9 +143,9 @@ cut_characteristics_dataset <- function(data_set, interval = c(150, 50)) {
         dForward <- rbind(dForward, d1[as.numeric(data_set[[1]][i]-interval[1]):(data_set[[1]] + interval[2])])
         gcForward<-rbind(gcForward, GC[as.numeric(data_set[[1]][i]-interval[1]):(data_set[[1]] + interval[2])])
       } else {
-        E0Reverse<-rbind(E0Reverse, E02[as.numeric(data_set[[1]][i]-interval[1]):(data_set[[1]][i] + interval[2])])
-        dReverse<-rbind(dReverse, d2[as.numeric(data_set[[1]][i]-interval[1]):(data_set[[1]][i] + interval[2])])
-        gcReverse<-rbind(gcReverse, GC[as.numeric(data_set[[1]][i]-interval[1]):(data_set[[1]][i] + interval[2])])
+        E0Reverse<-rbind(E0Reverse, E02[as.numeric(data_set[[1]][i]-interval[2]):(data_set[[1]][i] + interval[1])])
+        dReverse<-rbind(dReverse, d2[as.numeric(data_set[[1]][i]-interval[2]):(data_set[[1]][i] + interval[1])])
+        gcReverse<-rbind(gcReverse, GC[as.numeric(data_set[[1]][i]-interval[2]):(data_set[[1]][i] + interval[1])])
       }
       EP <- rbind(EP, data_set[[3]][i, ])
     }

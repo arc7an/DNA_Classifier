@@ -45,7 +45,7 @@ parallel_calculate_ep <- function(genome_file_location, part=1, strand="forward"
   for (i in part:(length(bounds) - 1)){
     pseudo_tss <- bounds[i]:bounds[i+1] + 400
     print(length(pseudo_tss))
-    res <- parSapply(cl, X = pseudo_tss, FUN = function(x) calculate_EP_on_interval(x, unlist(strsplit(extended_genome_string, '')), c(250, 150), -480:239, strand))
+    res <- parSapply(cl, X = pseudo_tss, FUN = function(x) calculate_EP_on_interval(x, unlist(strsplit(extended_genome_string, '')), c(267, 217), -480:239, strand))
     
    # assign( paste0('sliced_ep_', min(pseudo_tss), '_', max(pseudo_tss)), res)
     save( res, file = paste0('/home/artem/work/2018/classifier_on_other_genomes/calculated_EP_ecoli/',  paste0('sliced_ep_', min(pseudo_tss), '_', max(pseudo_tss)), '.rda'))
