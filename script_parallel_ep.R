@@ -18,7 +18,10 @@ source("/home/artem/work/2018/classifier_on_other_genomes/calculate_sequence_phy
 parallel_calculate_ep <- function(genome_file_location, part=1, strand="forward"){
   genome_string <- unlist(read.fasta(genome_file_location, as.string = F, seqonly = T))
   extended_genome_string <- paste0(substr(genome_string, (nchar(genome_string) - 400), nchar(genome_string)), genome_string, substr(genome_string, 1, 400), sep="")
-  seqVector<-unlist(strsplit(extended_genome_string, ''))
+  extended_genome_string_reversed <- reverseComplement(extended_genome_string)
+  seqVector <- switch(strand,
+                      forward = unlist(strsplit(extended_genome_string, '')),
+                      reverse = unlist(strsplit(extended_genome_string_reversed, '')))
   #pseudo_tss <- 1:250000
 
   no_cores = detectCores() - 1
