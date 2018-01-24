@@ -18,7 +18,7 @@ source("/home/artem/work/2018/classifier_on_other_genomes/calculate_sequence_phy
 parallel_calculate_ep <- function(genome_file_location, part=1, strand="forward"){
   genome_string <- unlist(read.fasta(genome_file_location, as.string = F, seqonly = T))
   extended_genome_string <- paste0(substr(genome_string, (nchar(genome_string) - 400), nchar(genome_string)), genome_string, substr(genome_string, 1, 400), sep="")
-  extended_genome_string_reversed <- reverseComplement(extended_genome_string)
+  extended_genome_string_reversed <- as.character(reverseComplement(DNAString(extended_genome_string)))
   seqVector <- switch(strand,
                       forward = unlist(strsplit(extended_genome_string, '')),
                       reverse = unlist(strsplit(extended_genome_string_reversed, '')))
@@ -35,6 +35,7 @@ parallel_calculate_ep <- function(genome_file_location, part=1, strand="forward"
 
   # clusterEvalQ(cl, 'extended_ecoli_string')
   clusterEvalQ(cl, 'extended_genome_string')
+  clusterEvalQ(cl, 'extended_genome_string_reverse')
   clusterEvalQ(cl, {library(reldna)})
   clusterExport(cl, "calculate_EP_on_interval")
   clusterExport(cl, "get_forward_substring")
@@ -45,7 +46,9 @@ parallel_calculate_ep <- function(genome_file_location, part=1, strand="forward"
 
   #save(res, file = '/home/jane/Документы/Misha/mol_a_2018/parsapply_ep_ecoli1strand_1_.rda')
 
-  bounds <- c(seq(1, nchar(extended_genome_string), 250000), nchar(extended_genome_string))
+  bounds <- switch(strand,
+                   forward = c(seq(1, nchar(extended_genome_string), 250000), nchar(extended_genome_string)),
+                   reverse = c(seq(1, nchar(extended_genome_string_reversed), 250000), nchar(extended_genome_string_reversed)))
   for (i in part:(length(bounds) - 1)){
     pseudo_tss <- bounds[i]:bounds[i+1] + 400
     print(length(pseudo_tss))
