@@ -52,6 +52,9 @@ dynchars<-function(seq, average_interval_size, tss, boundaries, strand=c('forwar
     stop("Sequence must be a character vector containing A, C, G, T letters only")
   # if((tss - average_interval_size < 1) || (tss + average_interval_size > length(seq)))
   #   stop("Considered average_interval_size exceeds the size of the sequence")
+  seq <- switch(strand, 
+                forward = seq,
+                reverse = as.character(reverseComplement(DNAString(seq))))
   seq <- unlist(strsplit(seq, ''))
   seq <- toupper(seq)
 

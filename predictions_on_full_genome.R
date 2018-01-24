@@ -61,8 +61,8 @@ load('/home/artem/work/2016/iteb/pca_data_set_200_150_50.Rdata')
 setwd("/home/artem/work/2018/classifier_on_other_genomes/calculated_EP_ecoli/")
 epSlices <- list.files()
 # load profiles of dynamic characteristics and GC and cut the end for proper cancatenation
-load("/home/artem/work/2018/classifier_on_other_genomes/drive-download-20171201T095355Z-001/df_whole_ecoli_dynamic_characteristics.rda")
-df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics[1:(length(df_whole_ecoli_dynamic_characteristics[,1]) - 193),] #75 193
+load("/home/artem/work/2018/classifier_on_other_genomes/df_whole_ecoli_dynamic_characteristics.rda")
+df_whole_ecoli_dynamic_characteristics <- as.data.frame(df_whole_ecoli_dynamic_characteristics[1:(length(df_whole_ecoli_dynamic_characteristics[,1])),]) #75 193
 
 make_prediction_for_slice <- function(ep_slice, model, strand=1) {
 # load chosen model Nonpropmoter-Promoter and adjust apriori probabilities
@@ -81,15 +81,14 @@ make_prediction_for_slice <- function(ep_slice, model, strand=1) {
   # res <- res[,1:(ncol(res) - 294)]
 # split data for one strand
   if (strand == 1){
-    df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics[bounds[1]:bounds[2], c(1,3,5)]
+    df_whole_ecoli_dynamic_characteristics <- dynamic_characteristics[bounds[1]:bounds[2] - 400, c(1,2,6)]
     # for right end only
     # df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics[bounds[1]:(bounds[2] - 294), c(1,3,5)]
   }
   else {
-    df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics[bounds[1]:bounds[2], c(2,4,6)]
+    df_whole_ecoli_dynamic_characteristics <- dynamic_characteristics[bounds[1]:bounds[2] - 400, c(7,8,6)]
     # for right end only
     # df_whole_ecoli_dynamic_characteristics <- df_whole_ecoli_dynamic_characteristics[bounds[1]:(bounds[2] - 294), c(2,4,6)]
-    res <- res[nrow(res):1,]
   }
 
   sliced_e01 <- sliding_window(df_whole_ecoli_dynamic_characteristics[,1], 201, 1)

@@ -50,7 +50,9 @@ parallel_calculate_ep <- function(genome_file_location, part=1, strand="forward"
                    forward = c(seq(1, nchar(extended_genome_string), 250000), nchar(extended_genome_string)),
                    reverse = c(seq(1, nchar(extended_genome_string_reversed), 250000), nchar(extended_genome_string_reversed)))
   for (i in part:(length(bounds) - 1)){
-    pseudo_tss <- bounds[i]:bounds[i+1] + 400
+    # for the last part
+    # pseudo_tss <- bounds[i]:(bounds[i+1]-618) + 400
+    pseudo_tss <- bounds[i]:(bounds[i+1]) + 400
     print(length(pseudo_tss))
     res <- parSapply(cl, X = pseudo_tss, FUN = function(x) calculate_EP_on_interval(x, seqVector, c(267, 217), -480:239, strand))
 
