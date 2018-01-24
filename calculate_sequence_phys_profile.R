@@ -11,11 +11,16 @@ get_forward_subseq <- function(seq, tss, boundaries) {
 }
 
 get_reverse_subseq <- function(seq, tss, boundaries) {
-  return(as.character(
-    reverseComplement(
-      DNAString(seq,
-                start = tss-boundaries[2],
-                nchar = sum(boundaries)+1))))
+  # return(as.character(
+  #   reverseComplement(
+  #     DNAString(seq,
+  #               start = tss-boundaries[2],
+  #               nchar = sum(boundaries)+1))))
+  #DNAString(rcshort, start = 501 - 10 - 1, nchar = sum(c(10,15))+1)
+  return (as.character(
+    DNAString(seq,
+              start = tss - boundaries[1] - 1,
+              nchar = sum(boundaries)+1)))
 }
 get_forward_substring <- function(seq, tss, boundaries) {
    return(seq[(tss-boundaries[1]):(tss+boundaries[2])])
